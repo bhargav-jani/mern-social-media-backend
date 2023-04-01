@@ -33,7 +33,11 @@ export const register = async (req, res) => {
 		const savedUser = await newUser.save();
 		res.status(201).json(savedUser);
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+		if(err.code === 11000){
+			res.status(400).json({msg: "This email already exists"})
+		} else {
+			res.status(500).json({ error: err.message });
+		}
 	}
 };
 

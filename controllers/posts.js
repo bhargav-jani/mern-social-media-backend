@@ -71,3 +71,38 @@ export const likePost = async (req, res) => {
 		res.status(404).json({ message: err.message });
 	}
 };
+
+export const addComment = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const { comment } = req.body;
+		const post = await Post.findById(id);
+
+		post.comments.push(comment);
+
+		const updatedPost = await Post.findByIdAndUpdate(
+			id,
+			{ comments: post.comments },
+			{ new: true }
+		);
+
+		res.status(200).json(updatedPost);
+	} catch (err) {
+		res.status(404).json({ message: err.message });
+	}
+};
+
+/* delete */
+export const deletePost = async (req, res) => {
+	const { userId, postId } = req.params;
+
+	try {
+		const deleted = await Post.deleteOne({_id : postId});
+		console.log(deleted); 
+
+		const post = await Post.find({ userId }).sort({createdAt: -1}).limit(20);
+		res.status(200).json(post);
+	} catch (err) {
+		res.status(403).json({ message: err.message });
+	}
+};
